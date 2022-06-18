@@ -1,0 +1,154 @@
+@mixin transition( $t... ) {
+  -webkit-transition: $t;
+  -moz-transition: $t;
+  -ms-transition: $t;
+  transition: $t;
+}
+
+.main-container {
+  @media(orientation: landscape) {
+    display:flex;
+    flex-direction: row;
+  }
+}
+
+
+.matrix {
+  //font: 14px Arial;
+  padding: .1vh .1vw .1vh .1vw;
+  margin-bottom: 2vh;
+  //@media(orientation: landscape) {
+  //  height: 100%;
+  //}
+  margin-top: 1vh;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.cell {
+  background-color: #9bd7d3;
+
+  cursor: pointer;
+  color: #fff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @media(orientation: portrait) {
+    //width: 9.5%;
+    //padding-bottom: 9.5%; /* Same as width, sets height */
+    //margin-bottom: 0.5%; /* (100-32*3)/2 */
+    //margin-left: 0.5%;
+
+    //position: relative;
+
+    border-radius: 1vw;
+    margin-bottom: 0.5vw; /* (100-32*3)/2 */
+    margin-left: 0.5vw;
+    height: 8.7vw;
+    width: 8.7vw;
+  }
+
+  @media(orientation: landscape) {
+    //height: auto;
+    //padding-right: 9.5%;
+    border-radius: 1vh;
+    margin-bottom: 0.5vh; /* (100-32*3)/2 */
+    margin-left: 0.5vh;
+
+    height: 8.5vh;
+    width: 8.5vh;
+  }
+
+  //text-align: center;
+  //vertical-align: middle;
+  //line-height: 90px;
+  @include transition(background-color .3s);
+
+  // Label hover effect
+  &:hover {
+    background-color: #282c34;
+
+    &:after {
+      opacity: .4;
+    }
+  }
+  &--x {
+    @extend .cell;
+    background-color: #ff1a5b;
+
+    font-family: Arial, serif;
+    font-size: calc(1.5vw + 1.5vh + 2vmin);
+    //text-align: center;
+    //vertical-align: middle;
+    //line-height: inherit;
+    &:after {
+      //content: "\274C";
+      content: "x";
+    }
+    cursor: default;
+    &:hover {
+      background-color: #ff1a5b;
+      &:after {
+        opacity: 1;
+      }
+    }
+
+  }
+  &--o {
+    @extend .cell;
+    background-color: #00873F;
+
+    font-family: Arial, serif;
+    font-size: calc(1.5vw + 1.5vh + 2vmin);
+    //text-align: center;
+    //vertical-align: middle;
+    //line-height: inherit;
+    &:after {
+      //content: "\25EF"
+      content: "o";
+    }
+    cursor: default;
+    &:hover {
+      background-color: #00873F;
+      &:after {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+
+
+
+.cell_o {
+  background-color: #1aff40;
+  border-radius: 10px;
+  color: #fff;
+  //display: none;
+  // TODO $
+  height: 90px;
+  width: 90px;
+  //position: absolute;
+  margin: 5px;
+  padding: 3px;
+
+  font: 60px Arial;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 75px;
+
+  &:after {
+    content: "o"
+  }
+}
+
+

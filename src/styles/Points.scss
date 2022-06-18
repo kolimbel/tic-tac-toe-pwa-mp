@@ -1,0 +1,40 @@
+.title {
+  text-align: center;
+  font-family: Arial, serif;
+  font-size: 1.5rem;
+  margin-top: 2vh
+}
+
+.points-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  //width: 80vw;
+  padding: 2vh .8vh 2vw .8vh;
+
+  @media(orientation: landscape) {
+    justify-content: center;
+    flex-direction: column;
+    margin-left: 5vw;
+    margin-right: 5vw;
+  }
+
+
+}
+
+.points-container > .item {
+  //height: 30px;
+  //line-height: 30px;
+  font-family: Arial, serif;
+  font-size: 1.2rem;
+  margin: 10px auto;
+  //justify-content: center;
+  //align-items: center;
+  //text-align: center;
+  //vertical-align:middle;
+  //display: flex;
+  //alignItems: center;
+  //flexWrap: wrap;
+}
+
