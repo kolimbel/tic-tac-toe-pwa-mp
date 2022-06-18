@@ -10,6 +10,7 @@ import Ranking from "./components/Ranking/Ranking";
 import "reflect-metadata";
 import Multiplayer from "./views/Multiplayer";
 
+
 function App() {
   return (
     <>
