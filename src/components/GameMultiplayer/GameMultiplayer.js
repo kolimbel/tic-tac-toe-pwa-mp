@@ -9,7 +9,6 @@ import {
 } from "../../helpers/game";
 import Points from "../PlayerPoints/Points";
 
-// import { set, get, update } from "idb-keyval";
 import { firebase } from "../../firebaseConfig";
 import {
   Button,
@@ -18,22 +17,28 @@ import {
   FormGroup,
   TextField,
 } from "@mui/material";
+import { ColorToggleButton } from "../ColorToggleButton/ColorToggleButton";
 
 function GameMultiplayer(props) {
-  // const gameId = "0ec9aa44fb4c4763950649d8f3974d88";
   const [gameId, setGameId] = useState(getRandomName());
   const [matrix, setMatrix] = useState(fillMatrix());
   const [currPlayer, setCurrPlayer] = useState(1);
   const [currWinner, setCurrWinner] = useState(0);
   const [gameStatus, setGameStatus] = useState(0);
+  const [startType, setStartType] = useState("newGame");
 
   const [name, setName] = useState("");
   const [pin, setPin] = useState("");
   const [isJoinTheGame, setJoinTheGame] = useState(false);
   const [youArePlayer, setYouArePlayer] = useState(1);
 
-  // [fstPlayer, sndPlayer, tie]
   const [playerPoints, setPlayerPoints] = useState([0, 0, 0]);
+
+  const onStartTypeChange = (type) => {
+    if (type === "newGame" || "joinGame") {
+      setStartType(type);
+    }
+  };
 
   useEffect(() => {
     const gameRef = firebase.database().ref(`games/${gameId}`);
@@ -45,18 +50,12 @@ function GameMultiplayer(props) {
     gameRef.child("player_o").on("value", (snapshot) => {
       player_o = snapshot.val();
     });
-    // setIsGameStarted(!!player_x && !!player_o);
   }, []);
 
   useEffect(() => {
     console.log("useEffect - get from firebase");
     const gameRef = firebase.database().ref(`games/${gameId}`);
     gameRef.child("currentMatrix").on("value", (snapshot) => {
-      // snapshot.forEach(function (childSnapshot) {
-      //   var childData = childSnapshot.val();
-      //
-      //   console.log("childData", childData);
-      // });
       console.log("snapshot", snapshot.val());
       if (snapshot.exists() && !!snapshot.val()) setMatrix(snapshot.val());
     });
@@ -85,23 +84,6 @@ function GameMultiplayer(props) {
   }, [gameId, currPlayer]);
 
   useEffect(() => {
-    // const updateRanking = async () => {
-    //   // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA");
-    //   const best = await get("best");
-    //
-    //   if (playerPoints[0] > best[0]) {
-    //     console.log("changing ranking");
-    //     await update("best", (val) => playerPoints);
-    //     const nowBest = await get("best");
-    //     console.log("nowBest", nowBest);
-    //   }
-    // };
-    // updateRanking().catch(console.error);
-    // const addGame = async () => {
-    //   await set(gameId.toString(), playerPoints);
-    // };
-    // addGame().catch(console.error);
-
     updateDb(true);
   }, [playerPoints]);
 
@@ -128,29 +110,12 @@ function GameMultiplayer(props) {
       console.log("currentUser2", firebase.auth().currentUser);
 
       if (clearMatrix) {
-        // gameRef.set({
-        //   player_x: "idplayera1",
-        //   player_o: "idplayera2",
-        //   playerPoints: playerPoints,
-        //
-        // });
         gameRef.update({
-          // player_x: "idplayera1",
-          // player_o: "idplayera2",
           currentMatrix: matrix,
           playerPoints: playerPoints,
         });
       } else {
-        // gameRef.set({
-        //   player_x: "idplayera1",
-        //   player_o: "idplayera2",
-        //   playerPoints: playerPoints,
-        //   currentMatrix: matrix,
-        // });
-
         gameRef.update({
-          // player_x: "idplayera1",
-          // player_o: "idplayera2",
           playerPoints: playerPoints,
           currentMatrix: matrix,
         });
@@ -176,17 +141,6 @@ function GameMultiplayer(props) {
         setCurrPlayer(1);
       }
       check();
-      /*      new Promise(() => {
-                          let copy = [...matrix];
-                          copy[row][col] = currPlayer;
-                          setMatrix(copy);
-                          console.log("changed player");
-                          if (currPlayer === 1) {
-                            setCurrPlayer(2);
-                          } else {
-                            setCurrPlayer(1);
-                          }
-                        }).then(check());*/
     } else {
       console.log("Niemożliwy ruch");
     }
@@ -343,7 +297,7 @@ function GameMultiplayer(props) {
   return (
     <>
       <div className="main-container">
-        <div>
+        <div className="userName">
           <TextField
             id="outlined-basic"
             label="Name"
@@ -353,34 +307,29 @@ function GameMultiplayer(props) {
               setName(e.target.value);
             }}
           />
-          <TextField
-            id="outlined-basic"
-            label="PIN"
-            variant="outlined"
-            type="number"
-            value={pin}
-            onChange={(e) => {
-              if (e.target.value < 1000 && e.target.value > 9999) {
-                setPin("");
-                console.log("incorrect pin");
-              } else {
-                setPin(e.target.value);
-              }
-            }}
-          />
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  defaultChecked
-                  onChange={(e) => {
-                    setJoinTheGame(!e.target.checked);
-                  }}
-                />
-              }
-              label="New game"
+        </div>
+        <ColorToggleButton handleStartTypeChange={onStartTypeChange} />
+
+        {startType === "joinGame" && (
+          <div className="pinCode">
+            <TextField
+              id="outlined-basic"
+              label="PIN"
+              variant="outlined"
+              type="number"
+              value={pin}
+              onChange={(e) => {
+                if (e.target.value < 1000 && e.target.value > 9999) {
+                  setPin("");
+                  console.log("incorrect pin");
+                } else {
+                  setPin(e.target.value);
+                }
+              }}
             />
-          </FormGroup>
+          </div>
+        )}
+        <div>
           <Button
             variant="outlined"
             onClick={() => startGame()}
