@@ -15,6 +15,9 @@ function Points(props) {
   let youArePlayer = 0;
   youArePlayer = props.youArePlayer;
 
+  let gameStatus = 0;
+  gameStatus = props.gameStatus;
+
   return (
     <>
       <div className="details-container">
@@ -39,21 +42,24 @@ function Points(props) {
             </Stack>
           </div>
         </div>
-        <div className="whosMove">
-          <Stack direction="row" alignItems="center" gap={1}>
-            Current move:
-            {currentPlayer === 1 ? (
-              <CloseOutlinedIcon sx={{ color: red[900] }} />
-            ) : currentPlayer === 2 ? (
-              <CircleOutlinedIcon sx={{ color: green[800] }} />
-            ) : (
-              ""
-            )}
-            {currentPlayer === youArePlayer
-              ? " - it's your move!"
-              : " - it's opponent move!"}
-          </Stack>
-        </div>
+        {gameStatus === 1 && (
+          <div className="whosMove">
+            <Stack direction="row" alignItems="center" gap={1}>
+              Current move:
+              {currentPlayer === 1 ? (
+                <CloseOutlinedIcon sx={{ color: red[900] }} />
+              ) : currentPlayer === 2 ? (
+                <CircleOutlinedIcon sx={{ color: green[800] }} />
+              ) : (
+                ""
+              )}
+              {currentPlayer === youArePlayer
+                ? " - it's your move!"
+                : " - it's opponent move!"}
+            </Stack>
+          </div>
+        )}
+        {gameStatus === 2 && <div className="whosMove">Game over!</div>}
       </div>
     </>
   );

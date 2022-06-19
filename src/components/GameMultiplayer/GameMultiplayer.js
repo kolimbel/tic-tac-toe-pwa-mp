@@ -43,17 +43,21 @@ function GameMultiplayer(props) {
     }
   };
 
+  const [player_x, setPlayer_x] = useState("");
+  const [player_o, setPlayer_o] = useState("");
+
   useEffect(() => {
     const gameRef = firebase.database().ref(`games/${gameId}`);
-    let player_x = null;
-    let player_o = null;
+
     gameRef.child("player_x").on("value", (snapshot) => {
-      player_x = snapshot.val();
+      setPlayer_x(snapshot.val());
     });
     gameRef.child("player_o").on("value", (snapshot) => {
-      player_o = snapshot.val();
+      setPlayer_o(snapshot.val());
     });
     // setIsGameStarted(!!player_x && !!player_o);
+
+    // gameRef.onDisconnect().remove();
   }, []);
 
   useEffect(() => {
@@ -93,23 +97,6 @@ function GameMultiplayer(props) {
   }, [gameId, currPlayer]);
 
   useEffect(() => {
-    // const updateRanking = async () => {
-    //   // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA");
-    //   const best = await get("best");
-    //
-    //   if (playerPoints[0] > best[0]) {
-    //     console.log("changing ranking");
-    //     await update("best", (val) => playerPoints);
-    //     const nowBest = await get("best");
-    //     console.log("nowBest", nowBest);
-    //   }
-    // };
-    // updateRanking().catch(console.error);
-    // const addGame = async () => {
-    //   await set(gameId.toString(), playerPoints);
-    // };
-    // addGame().catch(console.error);
-
     updateDb(true);
   }, [playerPoints]);
 
@@ -136,29 +123,12 @@ function GameMultiplayer(props) {
       console.log("currentUser2", firebase.auth().currentUser);
 
       if (clearMatrix) {
-        // gameRef.set({
-        //   player_x: "idplayera1",
-        //   player_o: "idplayera2",
-        //   playerPoints: playerPoints,
-        //
-        // });
         gameRef.update({
-          // player_x: "idplayera1",
-          // player_o: "idplayera2",
           currentMatrix: matrix,
           playerPoints: playerPoints,
         });
       } else {
-        // gameRef.set({
-        //   player_x: "idplayera1",
-        //   player_o: "idplayera2",
-        //   playerPoints: playerPoints,
-        //   currentMatrix: matrix,
-        // });
-
         gameRef.update({
-          // player_x: "idplayera1",
-          // player_o: "idplayera2",
           playerPoints: playerPoints,
           currentMatrix: matrix,
         });
@@ -184,17 +154,6 @@ function GameMultiplayer(props) {
         setCurrPlayer(1);
       }
       check();
-      /*      new Promise(() => {
-                          let copy = [...matrix];
-                          copy[row][col] = currPlayer;
-                          setMatrix(copy);
-                          console.log("changed player");
-                          if (currPlayer === 1) {
-                            setCurrPlayer(2);
-                          } else {
-                            setCurrPlayer(1);
-                          }
-                        }).then(check());*/
     } else {
       console.log("Niemożliwy ruch");
     }
@@ -239,7 +198,8 @@ function GameMultiplayer(props) {
   const startGame = () => {
     console.log("start game", name, pin, isJoinTheGame);
     if (!!name) {
-      if (isJoinTheGame) {
+      // if (isJoinTheGame) {
+      if (startType === "joinGame") {
         if (!!pin && pin.length === 4) {
           const gamesRef = firebase.database().ref(`games/`);
           gamesRef
@@ -304,18 +264,6 @@ function GameMultiplayer(props) {
           currentPlayer: currPlayer,
           gameStatus: 2,
         });
-        let player_x = "";
-        let player_o = "";
-        gameRef.child("player_x").once("value", (snapshot) => {
-          if (snapshot.exists()) {
-            player_x = snapshot.val();
-          }
-        });
-        gameRef.child("player_o").once("value", (snapshot) => {
-          if (snapshot.exists()) {
-            player_o = snapshot.val();
-          }
-        });
 
         statsRef.set({
           player_x: player_x.toString(),
@@ -324,6 +272,29 @@ function GameMultiplayer(props) {
           points_o: playerPoints[1],
           tie: playerPoints[2],
         });
+
+        // let player_x = "";
+        // let player_o = "";
+        // gameRef
+        //   .child("player_x")
+        //   .once("value", (snapshot) => {
+        //     if (snapshot.exists()) {
+        //       player_x = snapshot.val();
+        //       console.log("player_x = snapshot.val();", snapshot.val());
+        //     }
+        //   })
+        //   .then(
+        //     gameRef
+        //       .child("player_o")
+        //       .once("value", (snapshot) => {
+        //         if (snapshot.exists()) {
+        //           player_o = snapshot.val();
+        //         }
+        //       })
+        //       .then(
+
+        //     )
+        // );
       }
     }
   };
@@ -352,85 +323,90 @@ function GameMultiplayer(props) {
   return (
     <>
       <div className="main-container">
-        <div className="userNameRow">
-          <TextField
-            id="outlined-basic"
-            label="Name"
-            variant="outlined"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-          />
-        </div>
-        <div className="chooseStartType">
-          <ColorToggleButton handleStartTypeChange={onStartTypeChange} />
-        </div>
-        {startType === "joinGame" && (
-          <div className="pinRow">
-            <TextField
-              id="outlined-basic"
-              label="Type your PIN"
-              type="number"
-              value={pin}
-              onChange={(e) => {
-                if (e.target.value < 1000 && e.target.value > 9999) {
-                  setPin("");
-                  console.log("incorrect pin");
-                } else {
-                  setPin(e.target.value);
-                }
-              }}
-            />
+        {gameStatus === 0 && (
+          <div id="formStartGame">
+            <div className="userNameRow">
+              <TextField
+                id="outlined-basic"
+                label="Name"
+                variant="outlined"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+            </div>
+            <div className="chooseStartType">
+              <ColorToggleButton handleStartTypeChange={onStartTypeChange} />
+            </div>
+            {startType === "joinGame" && (
+              <div className="pinRow">
+                <TextField
+                  id="outlined-basic"
+                  label="Type your PIN"
+                  type="number"
+                  value={pin}
+                  onChange={(e) => {
+                    if (e.target.value < 0 && e.target.value > 9999) {
+                      setPin("");
+                      console.log("incorrect pin");
+                    } else {
+                      setPin(e.target.value);
+                    }
+                  }}
+                />
+              </div>
+            )}
+            <div className="startButtonRow">
+              <Button
+                variant="outlined"
+                onClick={() => startGame()}
+                color="primary"
+              >
+                Start
+              </Button>
+            </div>
+            <div className="generatedCodePin">
+              {pin && startType === "newGame" && gameStatus === 0 && (
+                <Typography variant="h3">Pin: {pin}</Typography>
+              )}
+            </div>
           </div>
         )}
-        <div className="startButtonRow">
-          <Button
-            variant="outlined"
-            onClick={() => startGame()}
-            color="primary"
-          >
-            Start
-          </Button>
-        </div>
-        <div className="generatedCodePin">
-          {pin && startType === "newGame" && (
-            <Typography variant="h2">{pin}</Typography>
-          )}
-        </div>
-        <div
-          className="loader"
-          style={{ display: gameStatus === 0 ? "true" : "none" }}
-        >
-          Waiting for opponent!
-          <TailSpin ariaLabel="loading-indicator" />
-        </div>
-        <div style={{ display: gameStatus === 1 ? "true" : "none" }}>
+
+        {startType === "newGame" && isWaiting && gameStatus === 0 && (
+          <div className="loader">
+            <h4>Waiting for opponent!</h4>
+            <div>
+              <TailSpin ariaLabel="loading-indicator" color="#6495ED" />
+            </div>
+          </div>
+        )}
+        {gameStatus !== 0 && (
           <Points
             title="Game type: multiplayer"
             points={playerPoints}
             currentPlayer={currPlayer}
             youArePlayer={youArePlayer}
+            gameStatus={gameStatus}
           />
+        )}
+
+        <div className="">
+          {gameStatus === 1 && <div className="matrix">{listItems}</div>}
         </div>
 
-        <h2>gameStatus: {gameStatus.toString()}</h2>
-        <div className="">
-          <div
-            className="matrix"
-            style={{ display: gameStatus === 1 ? "true" : "none" }}
-          >
-            {listItems}
+        {gameStatus === 1 && (
+          <div className="finishBtn">
+            <Button
+              variant="outlined"
+              onClick={() => finishGame()}
+              color="error"
+            >
+              End game
+            </Button>
           </div>
-        </div>
-        <Button
-          variant="outlined"
-          style={{ display: gameStatus === 1 ? "true" : "none" }}
-          onClick={() => finishGame()}
-          color="error"
-        >
-          End game
-        </Button>
+        )}
       </div>
     </>
   );
