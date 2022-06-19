@@ -10,27 +10,42 @@ function Points(props) {
   playerPoints = props.points;
   let title = "";
   title = props.title;
+  let currentPlayer = 0;
+  currentPlayer = props.currentPlayer;
+
   return (
     <>
-      {/*<div className="title">{title}</div>*/}
-      <div className="points-container">
-        <div className="item">
-          <Stack direction="row" alignItems="center" gap={1}>
-            <CloseOutlinedIcon sx={{ color: red[900] }} />
-            Player 1: {playerPoints[0]}
-          </Stack>
-        </div>
-        <div className="item">
-          <Stack direction="row" alignItems="center" gap={1}>
-            <CircleOutlinedIcon sx={{ color: green[800] }} /> Player 2:{" "}
-            {playerPoints[1]}
-          </Stack>
-        </div>
+      <div className="details-container">
+        {/*<div className="title">{title}</div>*/}
+        <div className="points-container">
+          <div className="item">
+            <Stack direction="row" alignItems="center" gap={1}>
+              <CloseOutlinedIcon sx={{ color: red[900] }} />
+              Player 1: {playerPoints[0]}
+            </Stack>
+          </div>
+          <div className="item">
+            <Stack direction="row" alignItems="center" gap={1}>
+              <CircleOutlinedIcon sx={{ color: green[800] }} /> Player 2:{" "}
+              {playerPoints[1]}
+            </Stack>
+          </div>
 
-        <div className="item">
-          <Stack direction="row" alignItems="center" gap={1}>
-            Tie: {playerPoints[2]}
-          </Stack>
+          <div className="item">
+            <Stack direction="row" alignItems="center" gap={1}>
+              Tie: {playerPoints[2]}
+            </Stack>
+          </div>
+        </div>
+        <div className="whosMove">
+          Current move:{" "}
+          {currentPlayer === 1 ? (
+            <CloseOutlinedIcon sx={{ color: red[900] }} />
+          ) : currentPlayer === 2 ? (
+            <CircleOutlinedIcon sx={{ color: green[800] }} />
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </>

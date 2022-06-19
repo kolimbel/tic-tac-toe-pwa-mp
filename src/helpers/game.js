@@ -1,3 +1,5 @@
+import { v4 } from "uuid";
+
 const fillMatrix = (n = 10) => {
   return Array(n)
     .fill()
@@ -140,4 +142,18 @@ async function randomMove(matrix) {
   }
 }
 
-export { fillMatrix, fillMatrixToRemis, checkGame, randomMove };
+function getRandomName() {
+  let hexString = v4();
+  // console.log("hex:   ", hexString);
+
+  // remove decoration
+  hexString = hexString.replace(/-/g, "");
+  return hexString.toString();
+
+  // let base64String = Buffer.from(hexString, "hex").toString("base64");
+  // // console.log("base64:", base64String);
+
+  // return base64String;
+}
+
+export { fillMatrix, fillMatrixToRemis, checkGame, randomMove, getRandomName };
