@@ -5,12 +5,12 @@ export const SidebarElements = [
     icon: null,
     className: "nav-text",
   },
-  {
-    title: "New game (one player)",
-    path: "/onePlayer",
-    icon: null,
-    className: "nav-text",
-  },
+  // {
+  //   title: "New game (one player)",
+  //   path: "/onePlayer",
+  //   icon: null,
+  //   className: "nav-text",
+  // },
   {
     title: "New game (multiplayer)",
     path: "/multiplayer",

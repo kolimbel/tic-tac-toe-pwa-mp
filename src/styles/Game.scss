@@ -153,10 +153,20 @@
 
 .loader {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-content: center;
+  align-items: center;
   font-family: Arial, serif;
   font-size: 1.1rem;
+  margin-top: 20px;
+}
+
+.finishBtn{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
 }
 
 .userNameRow,.chooseStartType,.startButtonRow, .pinRow, .generatedCodePin {
