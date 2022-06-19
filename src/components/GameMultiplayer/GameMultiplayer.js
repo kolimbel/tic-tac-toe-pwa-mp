@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Game.scss";
-import { v4 } from "uuid";
+import Typography from "@mui/material/Typography";
+
 import {
   checkGame,
   fillMatrix,
@@ -9,15 +10,10 @@ import {
 } from "../../helpers/game";
 import Points from "../PlayerPoints/Points";
 
-// import { set, get, update } from "idb-keyval";
 import { firebase } from "../../firebaseConfig";
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  TextField,
-} from "@mui/material";
+import { Button, TextField } from "@mui/material";
+import { ColorToggleButton } from "../ColorToggleButton/ColorToggleButton";
+
 import { TailSpin } from "react-loader-spinner";
 
 function GameMultiplayer(props) {
@@ -27,6 +23,7 @@ function GameMultiplayer(props) {
   const [currPlayer, setCurrPlayer] = useState(1);
   const [currWinner, setCurrWinner] = useState(0);
   const [gameStatus, setGameStatus] = useState(0);
+  const [startType, setStartType] = useState("newGame");
   const [isWaiting, setWaiting] = useState(false);
 
   const [name, setName] = useState("");
@@ -36,6 +33,15 @@ function GameMultiplayer(props) {
 
   // [fstPlayer, sndPlayer, tie]
   const [playerPoints, setPlayerPoints] = useState([0, 0, 0]);
+
+  const onStartTypeChange = (type) => {
+    if (type === "newGame" || "joinGame") {
+      setStartType(type);
+      if (type === "joinGame") {
+        setJoinTheGame(true);
+      } else setJoinTheGame(false);
+    }
+  };
 
   useEffect(() => {
     const gameRef = firebase.database().ref(`games/${gameId}`);
@@ -346,7 +352,7 @@ function GameMultiplayer(props) {
   return (
     <>
       <div className="main-container">
-        <div>
+        <div className="userNameRow">
           <TextField
             id="outlined-basic"
             label="Name"
@@ -356,34 +362,29 @@ function GameMultiplayer(props) {
               setName(e.target.value);
             }}
           />
-          <TextField
-            id="outlined-basic"
-            label="PIN"
-            variant="outlined"
-            type="number"
-            value={pin}
-            onChange={(e) => {
-              if (e.target.value < 1000 && e.target.value > 9999) {
-                setPin("");
-                console.log("incorrect pin");
-              } else {
-                setPin(e.target.value);
-              }
-            }}
-          />
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  defaultChecked
-                  onChange={(e) => {
-                    setJoinTheGame(!e.target.checked);
-                  }}
-                />
-              }
-              label="New game"
+        </div>
+        <div className="chooseStartType">
+          <ColorToggleButton handleStartTypeChange={onStartTypeChange} />
+        </div>
+        {startType === "joinGame" && (
+          <div className="pinRow">
+            <TextField
+              id="outlined-basic"
+              label="Type your PIN"
+              type="number"
+              value={pin}
+              onChange={(e) => {
+                if (e.target.value < 1000 && e.target.value > 9999) {
+                  setPin("");
+                  console.log("incorrect pin");
+                } else {
+                  setPin(e.target.value);
+                }
+              }}
             />
-          </FormGroup>
+          </div>
+        )}
+        <div className="startButtonRow">
           <Button
             variant="outlined"
             onClick={() => startGame()}
@@ -391,6 +392,11 @@ function GameMultiplayer(props) {
           >
             Start
           </Button>
+        </div>
+        <div className="generatedCodePin">
+          {pin && startType === "newGame" && (
+            <Typography variant="h2">{pin}</Typography>
+          )}
         </div>
         <div
           className="loader"
