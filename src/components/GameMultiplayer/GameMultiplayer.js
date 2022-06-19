@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Game.scss";
-import { v4 } from "uuid";
+import Typography from "@mui/material/Typography";
+
 import {
   checkGame,
   fillMatrix,
@@ -10,13 +11,7 @@ import {
 import Points from "../PlayerPoints/Points";
 
 import { firebase } from "../../firebaseConfig";
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  TextField,
-} from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { ColorToggleButton } from "../ColorToggleButton/ColorToggleButton";
 
 function GameMultiplayer(props) {
@@ -297,7 +292,7 @@ function GameMultiplayer(props) {
   return (
     <>
       <div className="main-container">
-        <div className="userName">
+        <div className="userNameRow">
           <TextField
             id="outlined-basic"
             label="Name"
@@ -308,14 +303,14 @@ function GameMultiplayer(props) {
             }}
           />
         </div>
-        <ColorToggleButton handleStartTypeChange={onStartTypeChange} />
-
+        <div className="chooseStartType">
+          <ColorToggleButton handleStartTypeChange={onStartTypeChange} />
+        </div>
         {startType === "joinGame" && (
-          <div className="pinCode">
+          <div className="pinRow">
             <TextField
               id="outlined-basic"
-              label="PIN"
-              variant="outlined"
+              label="Type your PIN"
               type="number"
               value={pin}
               onChange={(e) => {
@@ -329,7 +324,7 @@ function GameMultiplayer(props) {
             />
           </div>
         )}
-        <div>
+        <div className="startButtonRow">
           <Button
             variant="outlined"
             onClick={() => startGame()}
@@ -337,6 +332,11 @@ function GameMultiplayer(props) {
           >
             Start
           </Button>
+        </div>
+        <div className="generatedCodePin">
+          {pin && startType === "newGame" && (
+            <Typography variant="h2">{pin}</Typography>
+          )}
         </div>
         <Points
           title="Game type: multiplayer"
