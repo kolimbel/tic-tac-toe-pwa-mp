@@ -352,7 +352,7 @@ function GameMultiplayer(props) {
   return (
     <>
       <div className="main-container">
-        <div>
+        <div className="userNameRow">
           <TextField
             id="outlined-basic"
             label="Name"
