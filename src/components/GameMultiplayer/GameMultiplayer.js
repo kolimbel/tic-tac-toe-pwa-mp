@@ -14,19 +14,24 @@ import { firebase } from "../../firebaseConfig";
 import { Button, TextField } from "@mui/material";
 import { ColorToggleButton } from "../ColorToggleButton/ColorToggleButton";
 
+import { TailSpin } from "react-loader-spinner";
+
 function GameMultiplayer(props) {
+  // const gameId = "0ec9aa44fb4c4763950649d8f3974d88";
   const [gameId, setGameId] = useState(getRandomName());
   const [matrix, setMatrix] = useState(fillMatrix());
   const [currPlayer, setCurrPlayer] = useState(1);
   const [currWinner, setCurrWinner] = useState(0);
   const [gameStatus, setGameStatus] = useState(0);
   const [startType, setStartType] = useState("newGame");
+  const [isWaiting, setWaiting] = useState(false);
 
   const [name, setName] = useState("");
   const [pin, setPin] = useState("");
   const [isJoinTheGame, setJoinTheGame] = useState(false);
   const [youArePlayer, setYouArePlayer] = useState(1);
 
+  // [fstPlayer, sndPlayer, tie]
   const [playerPoints, setPlayerPoints] = useState([0, 0, 0]);
 
   const onStartTypeChange = (type) => {
@@ -48,12 +53,18 @@ function GameMultiplayer(props) {
     gameRef.child("player_o").on("value", (snapshot) => {
       player_o = snapshot.val();
     });
+    // setIsGameStarted(!!player_x && !!player_o);
   }, []);
 
   useEffect(() => {
     console.log("useEffect - get from firebase");
     const gameRef = firebase.database().ref(`games/${gameId}`);
     gameRef.child("currentMatrix").on("value", (snapshot) => {
+      // snapshot.forEach(function (childSnapshot) {
+      //   var childData = childSnapshot.val();
+      //
+      //   console.log("childData", childData);
+      // });
       console.log("snapshot", snapshot.val());
       if (snapshot.exists() && !!snapshot.val()) setMatrix(snapshot.val());
     });
@@ -82,6 +93,23 @@ function GameMultiplayer(props) {
   }, [gameId, currPlayer]);
 
   useEffect(() => {
+    // const updateRanking = async () => {
+    //   // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA");
+    //   const best = await get("best");
+    //
+    //   if (playerPoints[0] > best[0]) {
+    //     console.log("changing ranking");
+    //     await update("best", (val) => playerPoints);
+    //     const nowBest = await get("best");
+    //     console.log("nowBest", nowBest);
+    //   }
+    // };
+    // updateRanking().catch(console.error);
+    // const addGame = async () => {
+    //   await set(gameId.toString(), playerPoints);
+    // };
+    // addGame().catch(console.error);
+
     updateDb(true);
   }, [playerPoints]);
 
@@ -108,12 +136,29 @@ function GameMultiplayer(props) {
       console.log("currentUser2", firebase.auth().currentUser);
 
       if (clearMatrix) {
+        // gameRef.set({
+        //   player_x: "idplayera1",
+        //   player_o: "idplayera2",
+        //   playerPoints: playerPoints,
+        //
+        // });
         gameRef.update({
+          // player_x: "idplayera1",
+          // player_o: "idplayera2",
           currentMatrix: matrix,
           playerPoints: playerPoints,
         });
       } else {
+        // gameRef.set({
+        //   player_x: "idplayera1",
+        //   player_o: "idplayera2",
+        //   playerPoints: playerPoints,
+        //   currentMatrix: matrix,
+        // });
+
         gameRef.update({
+          // player_x: "idplayera1",
+          // player_o: "idplayera2",
           playerPoints: playerPoints,
           currentMatrix: matrix,
         });
@@ -139,6 +184,17 @@ function GameMultiplayer(props) {
         setCurrPlayer(1);
       }
       check();
+      /*      new Promise(() => {
+                          let copy = [...matrix];
+                          copy[row][col] = currPlayer;
+                          setMatrix(copy);
+                          console.log("changed player");
+                          if (currPlayer === 1) {
+                            setCurrPlayer(2);
+                          } else {
+                            setCurrPlayer(1);
+                          }
+                        }).then(check());*/
     } else {
       console.log("Niemożliwy ruch");
     }
@@ -229,6 +285,7 @@ function GameMultiplayer(props) {
             currentMatrix: matrix,
           });
         }
+        setWaiting(true);
       }
     } else {
       console.log("empty name");
@@ -295,7 +352,7 @@ function GameMultiplayer(props) {
   return (
     <>
       <div className="main-container">
-        <div className="userNameRow">
+        <div>
           <TextField
             id="outlined-basic"
             label="Name"
@@ -341,17 +398,37 @@ function GameMultiplayer(props) {
             <Typography variant="h2">{pin}</Typography>
           )}
         </div>
-        <Points
-          title="Game type: multiplayer"
-          points={playerPoints}
-          currentPlayer={currPlayer}
-        />
-        {youArePlayer}
+        <div
+          className="loader"
+          style={{ display: gameStatus === 0 ? "true" : "none" }}
+        >
+          Waiting for opponent!
+          <TailSpin ariaLabel="loading-indicator" />
+        </div>
+        <div style={{ display: gameStatus === 1 ? "true" : "none" }}>
+          <Points
+            title="Game type: multiplayer"
+            points={playerPoints}
+            currentPlayer={currPlayer}
+            youArePlayer={youArePlayer}
+          />
+        </div>
+
         <h2>gameStatus: {gameStatus.toString()}</h2>
         <div className="">
-          <div className="matrix">{listItems}</div>
+          <div
+            className="matrix"
+            style={{ display: gameStatus === 1 ? "true" : "none" }}
+          >
+            {listItems}
+          </div>
         </div>
-        <Button variant="outlined" onClick={() => finishGame()} color="error">
+        <Button
+          variant="outlined"
+          style={{ display: gameStatus === 1 ? "true" : "none" }}
+          onClick={() => finishGame()}
+          color="error"
+        >
           End game
         </Button>
       </div>

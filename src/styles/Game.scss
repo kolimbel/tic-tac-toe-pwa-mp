@@ -151,6 +151,14 @@
   }
 }
 
+.loader {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  font-family: Arial, serif;
+  font-size: 1.1rem;
+}
+
 .userNameRow,.chooseStartType,.startButtonRow, .pinRow, .generatedCodePin {
   margin-top: 20px;
   display: flex;
