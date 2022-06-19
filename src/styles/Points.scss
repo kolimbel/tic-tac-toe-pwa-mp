@@ -28,7 +28,7 @@
   //line-height: 30px;
   font-family: Arial, serif;
   font-size: 1.2rem;
-  margin: 10px auto;
+  margin: 10px auto 0;
   //justify-content: center;
   //align-items: center;
   //text-align: center;
@@ -36,5 +36,16 @@
   //display: flex;
   //alignItems: center;
   //flexWrap: wrap;
+}
+
+.whosMove {
+  //text-align: center;
+  //justify-content: center;
+  //align-items: center;
+  display: flex;
+  justify-content: center;
+  font-family: Arial, serif;
+  font-size: 1.1rem;
+  margin: 5px auto 10px;
 }
 

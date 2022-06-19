@@ -18,6 +18,7 @@ import {
   FormGroup,
   TextField,
 } from "@mui/material";
+import { TailSpin } from "react-loader-spinner";
 
 function GameMultiplayer(props) {
   // const gameId = "0ec9aa44fb4c4763950649d8f3974d88";
@@ -26,6 +27,7 @@ function GameMultiplayer(props) {
   const [currPlayer, setCurrPlayer] = useState(1);
   const [currWinner, setCurrWinner] = useState(0);
   const [gameStatus, setGameStatus] = useState(0);
+  const [isWaiting, setWaiting] = useState(false);
 
   const [name, setName] = useState("");
   const [pin, setPin] = useState("");
@@ -277,6 +279,7 @@ function GameMultiplayer(props) {
             currentMatrix: matrix,
           });
         }
+        setWaiting(true);
       }
     } else {
       console.log("empty name");
@@ -389,17 +392,37 @@ function GameMultiplayer(props) {
             Start
           </Button>
         </div>
-        <Points
-          title="Game type: multiplayer"
-          points={playerPoints}
-          currentPlayer={currPlayer}
-        />
-        {youArePlayer}
+        <div
+          className="loader"
+          style={{ display: gameStatus === 0 ? "true" : "none" }}
+        >
+          Waiting for opponent!
+          <TailSpin ariaLabel="loading-indicator" />
+        </div>
+        <div style={{ display: gameStatus === 1 ? "true" : "none" }}>
+          <Points
+            title="Game type: multiplayer"
+            points={playerPoints}
+            currentPlayer={currPlayer}
+            youArePlayer={youArePlayer}
+          />
+        </div>
+
         <h2>gameStatus: {gameStatus.toString()}</h2>
         <div className="">
-          <div className="matrix">{listItems}</div>
+          <div
+            className="matrix"
+            style={{ display: gameStatus === 1 ? "true" : "none" }}
+          >
+            {listItems}
+          </div>
         </div>
-        <Button variant="outlined" onClick={() => finishGame()} color="error">
+        <Button
+          variant="outlined"
+          style={{ display: gameStatus === 1 ? "true" : "none" }}
+          onClick={() => finishGame()}
+          color="error"
+        >
           End game
         </Button>
       </div>
