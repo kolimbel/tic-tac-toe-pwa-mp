@@ -32,6 +32,9 @@ function GameMultiplayer(props) {
   const onStartTypeChange = (type) => {
     if (type === "newGame" || "joinGame") {
       setStartType(type);
+      if (type === "joinGame") {
+        setJoinTheGame(true);
+      } else setJoinTheGame(false);
     }
   };
 
