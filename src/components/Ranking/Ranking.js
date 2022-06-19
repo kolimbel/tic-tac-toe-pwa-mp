@@ -1,89 +1,60 @@
 import React, { useEffect, useState } from "react";
 // import { keys, get, set } from "idb-keyval";
 import Points from "../PlayerPoints/Points";
+import { firebase } from "../../firebaseConfig";
 
 function Ranking(props) {
-  // const [arr, setArr] = useState(null);
-  // const [points, setPoints] = useState(null);
-  // useEffect(() => {
-  //   keys()
-  //     .then(async (keys) => {
-  //       await setArr(keys);
-  //       let tempArrayPoints = [];
-  //       Array.from(keys).map((key) => {
-  //         get(key).then((value) => {
-  //           tempArrayPoints.push(value);
-  //         });
-  //       });
-  //       setPoints(tempArrayPoints);
-  //     })
-  //     .then((keys) => {});
-  // }, []);
-
-  const [value, setValue] = useState([0, 0, 0]);
-  // const [arr, setArr] = useState(null);
-  // const [points, setPoints] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const snapshotToArray = (snapshot) => {
+    const ret = [];
+    snapshot.forEach((childSnapshot) => {
+      ret.push(childSnapshot);
+    });
+    return ret;
+  };
 
   useEffect(() => {
-    async function getBest() {
-      // const best = await get("best");
-      const best = 999;
-      console.log("best", best);
-      setValue(best);
-    }
-    getBest().catch(console.error);
+    const statsRef = firebase.database().ref(`stats`);
+    statsRef
+      .orderByChild("points_x")
+      .once("value")
+      .then((list) => {
+        snapshotToArray(list)
+          .reverse()
+          .forEach((record) => {
+            console.log(record);
+            // console.log(record.child("player_x").val());
+            setPlayers((players) => [
+              ...players,
+              {
+                player_x: record.child("player_x").val(),
+                points_x: record.child("points_x").val(),
+              },
+            ]);
+          });
+      });
 
-    // async function getAll() {
-    //   async function getKeys() {
-    //     keys().then(async (keys) => {
-    //       await setArr(keys);
-    //     });
-    //   }
-    //   await getKeys();
-    //
-    //   async function getValues() {
-    //     let tempArrayPoints = [];
-    //     Array.from(arr).map((key) => {
-    //       get(key).then((value) => {
-    //         tempArrayPoints.push(value);
-    //       });
-    //     });
-    //     // tempArrayPoints.sort(function (a, b) {
-    //     //   return a[0] - b[0];
-    //     // });
-    //     setPoints(tempArrayPoints);
-    //   }
-    //   await getValues();
+    //   , (snapshot) => {
+    // if (snapshot.exists()) {
+    //   const statsData = snapshot.val();
+    //   console.log("statsData", statsData);
     // }
-    // getAll().catch(console.error);
+    // });
   }, []);
 
   return (
     <>
-      <>
-        <Points title="Ranking - best game:" points={Array.from(value)} />
-        {console.log(value)}
-
-        {/*<ul>*/}
-        {/*  {points.map((element) => {*/}
-        {/*    return <li>{element}</li>;*/}
-        {/*  })}*/}
-        {/*</ul>*/}
-
-        {/*<ul>*/}
-        {/*  /!*{arr.map((key) => {*!/*/}
-
-        {/*  /!*  get(key).then((value) => {*!/*/}
-        {/*  /!*    console.log(key, value);*!/*/}
-        {/*  /!*    <li>{value}</li>;*!/*/}
-        {/*  /!*  });*!/*/}
-        {/*  /!*})}*!/*/}
-        {/*  {console.log("points", points)}*/}
-        {/*  {points.map((value) => {*/}
-        {/*    return <li>{value}</li>;*/}
-        {/*  })}*/}
-        {/*</ul>*/}
-      </>
+      <div className="detailsContainer">
+        <div className="title">Ranking</div>
+        {console.log("players", players)}
+        {players.map((item, index) => {
+          return (
+            <li>
+              {item.player_x} - {item.points_x}
+            </li>
+          );
+        })}
+      </div>
     </>
   );
 }
