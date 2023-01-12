@@ -9,7 +9,7 @@ import "firebase/compat/database";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAucVrGRln2JgAu9dRhDDEtwjOfwyTDH0Y",
+  apiKey: "",
   authDomain: "tic-tac-toe-761e7.firebaseapp.com",
   databaseURL:
     "https://tic-tac-toe-761e7-default-rtdb.europe-west1.firebasedatabase.app",
