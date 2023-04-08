@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
-// import { keys, get, set } from "idb-keyval";
 import Points from "../PlayerPoints/Points";
 import { firebase } from "../../firebaseConfig";
+import { Box } from "@mui/material";
+
+function snapshotToArray(snapshot) {
+  const ret = [];
+  snapshot.forEach((childSnapshot) => {
+    ret.push({
+      player_x: childSnapshot.child("player_x").val(),
+      points_x: childSnapshot.child("points_x").val(),
+    });
+  });
+  return ret.reverse();
+}
 
 function Ranking(props) {
   const [players, setPlayers] = useState([]);
-  const snapshotToArray = (snapshot) => {
-    const ret = [];
-    snapshot.forEach((childSnapshot) => {
-      ret.push(childSnapshot);
-    });
-    return ret;
-  };
 
   useEffect(() => {
     const statsRef = firebase.database().ref(`stats`);
@@ -19,39 +23,38 @@ function Ranking(props) {
       .orderByChild("points_x")
       .once("value")
       .then((list) => {
-        snapshotToArray(list)
-          .reverse()
-          .forEach((record) => {
-            console.log(record);
-            // console.log(record.child("player_x").val());
-            setPlayers((players) => [
-              ...players,
-              {
-                player_x: record.child("player_x").val(),
-                points_x: record.child("points_x").val(),
-              },
-            ]);
-          });
+        setPlayers(snapshotToArray(list));
       });
-
-    //   , (snapshot) => {
-    // if (snapshot.exists()) {
-    //   const statsData = snapshot.val();
-    //   console.log("statsData", statsData);
-    // }
-    // });
   }, []);
 
   return (
     <>
       <div className="detailsContainer">
         <div className="title">Ranking</div>
-        {console.log("players", players)}
         {players.map((item, index) => {
           return (
-            <li>
-              {item.player_x} - {item.points_x}
-            </li>
+            <div key={index}>
+              <Box
+                component="span"
+                sx={{
+                  display: "block",
+                  p: 1,
+                  m: 1,
+                  bgcolor: (theme) =>
+                    theme.palette.mode === "dark" ? "#101010" : "#fff",
+                  color: (theme) =>
+                    theme.palette.mode === "dark" ? "grey.300" : "grey.800",
+                  border: "1px solid",
+                  borderColor: (theme) =>
+                    theme.palette.mode === "dark" ? "grey.800" : "grey.300",
+                  borderRadius: 2,
+                  fontSize: "0.875rem",
+                  fontWeight: "700",
+                }}
+              >
+                {item.player_x} - {item.points_x}
+              </Box>
+            </div>
           );
         })}
       </div>
